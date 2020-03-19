@@ -1,0 +1,17 @@
+var/
+*.class
+*.log
+*.swp
+# Package Files #
+*.jar
+*.war
+*.ear
+# IDE project files #
+.classpath
+.settings/
+.clover/
+.idea/
+.project
+*.iml
+#Build dir #
+target/
