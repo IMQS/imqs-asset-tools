@@ -1,0 +1,31 @@
+{
+  "classificationTypeCode": "BOQ",
+  "description": "Bill of Quantities",
+  "rootNodeCode": "BOQ",
+  "nodesTypes": [
+    {
+      "code": "BOQ_ROOT",
+      "description": "Bill of Quantities Root"
+    },
+	{
+      "code": "BOQ_FY",
+      "description": "Financial Year"
+    },
+    {
+      "code": "BOQ_CT",
+      "description": "Component Type"
+    },
+    {
+      "code": "BOQ_DT",
+      "description": "Descriptor Type"
+    },
+    {
+      "code": "BOQ_DC",
+      "description": "Descriptor Class"
+    },
+    {
+      "code": "BOQ_DS",
+      "description": "Descriptor Size"
+    }
+  ]
+}

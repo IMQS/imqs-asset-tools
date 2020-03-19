@@ -1,0 +1,10 @@
+{
+  "dbParams": {
+    "driverClass": "com.microsoft.sqlserver.jdbc.SQLServerDriver",
+    "jdbcUrl": "jdbc:sqlserver://localhost:1433;databaseName=IMQS_Asset_BuffaloCity_20180510",
+    "username": "sa",
+    "password": "1mq5p@55w0rd"
+  },
+  "exportFilename": "D:\\Dump\\IMQS\\Exports\\test\\export_java.csv",
+  "logFilename": "C:\\imqsvar\\logs\\imqs-asset-tools-boq-export.log"
+}
