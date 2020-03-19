@@ -1,0 +1,28 @@
+{
+	"imqs-template-service": {
+		"baseURI": "http://localhost:8668/template/v1_0/",
+		"username": "imqs",
+		"password": "1mq5p@55w0rd"
+	},
+	"importFilename": "D:\\Dump\\IMQS\\Exports\\test\\export_java.csv",
+	"logFilename": "C:\\imqsvar\\logs\\imqs-asset-tools-boq-import.log",
+	"batchSize": 5,
+	"fieldList": {
+		"eul": "NUMERIC",
+		"extentUnit": "STRING",
+		"eulUnit": "STRING",
+		"eulCG": "NUMERIC",
+		"residualPct": "NUMERIC",
+		"residualPctCG": "NUMERIC",
+		"unitRate": "NUMERIC",
+		"refUnitRateUnit": "STRING",
+		"descriptorSizeUnit": "STRING",
+		"extentConversion": "NUMERIC",
+		"unitRateCG": "NUMERIC",
+		"IncludeDescriptorSize": "BOOLEAN",
+		"CRCCalcIncludeDescriptorSize": "BOOLEAN",
+		"InterpolateDescriptorSize": "STRING",
+		"InterpolationTolerancePercentage": "NUMERIC",
+		"refDepreciationMethodId": "STRING"
+	}
+}
