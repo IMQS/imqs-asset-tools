@@ -5,6 +5,5 @@
     "username": "sa",
     "password": "1mq5p@55w0rd"
   },
-  "exportFilename": "D:\\Dump\\IMQS\\Exports\\test\\export_java.csv",
-  "logFilename": "C:\\imqsvar\\logs\\imqs-asset-tools-boq-export.log"
+  "exportFilename": "D:\\Dump\\IMQS\\Exports\\test\\export_java.csv"
 }

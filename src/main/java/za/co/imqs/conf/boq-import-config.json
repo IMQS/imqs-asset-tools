@@ -1,12 +1,11 @@
 {
 	"imqs-template-service": {
-		"baseURI": "http://localhost:8668/template/v1_0/",
+		"baseURI": "http://192.168.1.65:8668/template/v1_0/",
 		"username": "imqs",
 		"password": "1mq5p@55w0rd"
 	},
-	"importFilename": "D:\\Dump\\IMQS\\Exports\\test\\export_java.csv",
-	"logFilename": "C:\\imqsvar\\logs\\imqs-asset-tools-boq-import.log",
 	"batchSize": 5,
+	"importFilename": "D:\\Dump\\IMQS\\Exports\\test\\export_java.csv",
 	"fieldList": {
 		"eul": "NUMERIC",
 		"extentUnit": "STRING",
