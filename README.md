@@ -50,6 +50,7 @@ Each handler class is responsible for parsing its own configuration file.
  		"refDepreciationMethodId": "STRING"
     }
  }
+ 
 The fieldlist above in the config lists all the fields in the import file that must be processed by the importer for a template. 
 
 Note - the import file also contains the following fields which are mandatory:
