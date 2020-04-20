@@ -1,6 +1,8 @@
 package za.co.imqs.services;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.jayway.restassured.http.ContentType;
+import com.jayway.restassured.response.Response;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.*;
 import org.apache.http.entity.StringEntity;
@@ -11,16 +13,21 @@ import org.slf4j.LoggerFactory;
 import za.co.imqs.dto.BoqClassificationTemplateDTO;
 import java.util.List;
 
+import static com.jayway.restassured.RestAssured.given;
+
 /**
  * Created by gerhardv on 2020-02-06.
  */
 public class TemplateServiceRestClient {
     private String baseURI;
+    private String authToken;
 
     Logger logger = LoggerFactory.getLogger(TemplateServiceRestClient.class);
 
-    public TemplateServiceRestClient(String baseURI, String username, String password) throws Exception {
+    public TemplateServiceRestClient(String baseURI, String authSvcURI, String username, String password) throws Exception {
          this.baseURI = baseURI;
+
+         authToken = getAuthToken(authSvcURI, username, password);
     }
 
     public void createBoqClassification(String boqClassification) throws Exception {
@@ -32,8 +39,9 @@ public class TemplateServiceRestClient {
             //Define a put request
             HttpPut putRequest = new HttpPut(restEndpoint);
 
-            //Set the API media type in http content-type header
+            //Set the API media type and authToken in http content-type header
             putRequest.addHeader("content-type", "application/json");
+            putRequest.addHeader("Cookie", authToken);
 
             //Set the request post body
             StringEntity boqClass = new StringEntity(boqClassification);
@@ -68,8 +76,9 @@ public class TemplateServiceRestClient {
             //Define a put request
             HttpPut putRequest = new HttpPut(restEndpoint);
 
-            //Set the API media type in http content-type header
+            //Set the API media type and authToken in http content-type header
             putRequest.addHeader("content-type", "application/json");
+            putRequest.addHeader("Cookie", authToken);
 
             //Set the request post body
             final ObjectMapper mapper = new ObjectMapper();
@@ -95,5 +104,10 @@ public class TemplateServiceRestClient {
         }
 
         logger.debug("submitClassificationTemplateBatch EXIT");
+    }
+
+    private static String getAuthToken(String authSvcURI, String username, String password) {
+        Response response = given().contentType(ContentType.JSON).auth().preemptive().basic(username, password).when().post(authSvcURI);
+        return response.getHeader("Set-Cookie");
     }
 }

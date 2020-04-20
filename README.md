@@ -25,6 +25,7 @@ Each handler class is responsible for parsing its own configuration file.
  {
  	"imqs-template-service": {
  		"baseURI": "http://192.168.1.65:8668/template/v1_0/",
+ 		"authSvcURI": "http://192.168.1.65:/auth2/login",
  		"username": "imqs",
  		"password": "password"
         },

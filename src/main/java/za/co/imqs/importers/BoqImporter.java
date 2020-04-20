@@ -2,6 +2,8 @@ package za.co.imqs.importers;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.jayway.restassured.http.ContentType;
+import com.jayway.restassured.response.Response;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
@@ -22,6 +24,8 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
 
+import static com.jayway.restassured.RestAssured.given;
+
 /**
  * Created by gerhardv on 2020-02-04.
  * Imports a V6 PolicyVAR csv file into the V8 templates DB via the input form service.
@@ -30,6 +34,7 @@ import java.util.*;
  *   {
  *   	"imqs-template-service": {
  *   		"baseURI": "http://192.168.1.65:8668/template/v1_0/",
+ *   	    "authSvcURI": "http://192.168.1.65:/auth2/login",
  *   		"username": "imqs",
  *   		"password": "password"
  *          },
@@ -76,20 +81,20 @@ public class BoqImporter {
     public BoqImporter(String configFilename) throws Exception {
         //setup the configuration
         final ObjectMapper mapper = new ObjectMapper();
+
         final JsonNode config = mapper.readTree(new File(configFilename));
         filename = config.get("importFilename").asText();
         batchSize = config.get("batchSize").asInt(50);
-
-        final JsonNode imqsTemplateService = config.get("imqs-template-service");
-        
         //get the fields to import from the config
         final JsonNode fList = config.get("fieldList");
         fieldList = mapper.readValue(fList.toString(), Map.class);
 
-        templateSvc = new TemplateServiceRestClient(imqsTemplateService.get("baseURI").asText(),
-                imqsTemplateService.get("username").asText(),
-                imqsTemplateService.get("password").asText());
-
+        //get the template and auth service details
+        final JsonNode svcConfig = config.get("imqs-template-service");
+        templateSvc = new TemplateServiceRestClient(svcConfig.get("baseURI").asText(),
+                svcConfig.get("authSvcURI").asText(),
+                svcConfig.get("username").asText(),
+                svcConfig.get("password").asText());
     }
 
     public void execute() {
