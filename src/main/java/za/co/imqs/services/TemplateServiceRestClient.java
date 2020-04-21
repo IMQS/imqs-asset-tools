@@ -1,8 +1,6 @@
 package za.co.imqs.services;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.jayway.restassured.http.ContentType;
-import com.jayway.restassured.response.Response;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.*;
 import org.apache.http.entity.StringEntity;
@@ -11,23 +9,23 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import za.co.imqs.dto.BoqClassificationTemplateDTO;
-import java.util.List;
 
-import static com.jayway.restassured.RestAssured.given;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Base64;
 
 /**
  * Created by gerhardv on 2020-02-06.
  */
 public class TemplateServiceRestClient {
     private String baseURI;
-    private String authToken;
+    private String authSession;
 
     Logger logger = LoggerFactory.getLogger(TemplateServiceRestClient.class);
 
     public TemplateServiceRestClient(String baseURI, String authSvcURI, String username, String password) throws Exception {
-         this.baseURI = baseURI;
-
-         authToken = getAuthToken(authSvcURI, username, password);
+        this.baseURI = baseURI;
+        authSession = getAuthSession(authSvcURI, username, password);
     }
 
     public void createBoqClassification(String boqClassification) throws Exception {
@@ -35,32 +33,30 @@ public class TemplateServiceRestClient {
 
         final String restEndpoint = baseURI + "tree";
 
-        try (CloseableHttpClient httpClient = HttpClientBuilder.create().build()){
+        try (CloseableHttpClient httpClient = HttpClientBuilder.create().build()) {
             //Define a put request
             HttpPut putRequest = new HttpPut(restEndpoint);
 
             //Set the API media type and authToken in http content-type header
             putRequest.addHeader("content-type", "application/json");
-            putRequest.addHeader("Cookie", authToken);
+            putRequest.addHeader("Cookie", authSession);
 
             //Set the request post body
             StringEntity boqClass = new StringEntity(boqClassification);
             putRequest.setEntity(boqClass);
 
             //Send the request; It will immediately return the response in HttpResponse object if any
-            logger.debug("Requesting Endpoint: " + restEndpoint);
+            logger.info("Requesting Endpoint: " + restEndpoint);
             HttpResponse response = httpClient.execute(putRequest);
 
             //verify the valid error code first
             int statusCode = response.getStatusLine().getStatusCode();
             //Debug:remove
             //int statusCode = 201;
-            if (statusCode != 201)
-            {
+            if (statusCode != 201) {
                 throw new RuntimeException("CreateBoqClassification failed with HTTP error code : " + statusCode + ". Endpoint: " + restEndpoint);
             }
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             logger.error("Error creating BOQ Classification, requesting endpoint: " + restEndpoint + " - " + e.getMessage(), e);
             throw e;
         }
@@ -78,7 +74,7 @@ public class TemplateServiceRestClient {
 
             //Set the API media type and authToken in http content-type header
             putRequest.addHeader("content-type", "application/json");
-            putRequest.addHeader("Cookie", authToken);
+            putRequest.addHeader("Cookie", authSession);
 
             //Set the request post body
             final ObjectMapper mapper = new ObjectMapper();
@@ -86,19 +82,17 @@ public class TemplateServiceRestClient {
             putRequest.setEntity(boqTemplate);
 
             //Send the request; It will immediately return the response in HttpResponse object if any
-            logger.debug("Requesting Endpoint: " + restEndpoint);
+            logger.info("Requesting Endpoint: " + restEndpoint);
             HttpResponse response = httpClient.execute(putRequest);
 
             //verify the valid error code first
             int statusCode = response.getStatusLine().getStatusCode();
             //Debug:remove
             //int statusCode = 201;
-            if (statusCode != 201)
-            {
+            if (statusCode != 201) {
                 throw new RuntimeException("SubmitClassificationTemplateBatch failed with HTTP error code : " + statusCode + ". Endpoint: " + restEndpoint);
             }
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             logger.error("Error submitting Classification Template Batch. , requesting endpoint: " + restEndpoint + " - " + e.getMessage(), e);
             throw e;
         }
@@ -106,8 +100,24 @@ public class TemplateServiceRestClient {
         logger.debug("submitClassificationTemplateBatch EXIT");
     }
 
-    private static String getAuthToken(String authSvcURI, String username, String password) {
-        Response response = given().contentType(ContentType.JSON).auth().preemptive().basic(username, password).when().post(authSvcURI);
-        return response.getHeader("Set-Cookie");
+    public String getAuthSession(String authSvcURI, String username, String password) throws Exception {
+        try (CloseableHttpClient httpClient = HttpClientBuilder.create().build()) {
+            HttpPost postRequest = new HttpPost(authSvcURI);
+            postRequest.addHeader("Authorization", "Basic " + Base64.getEncoder().encodeToString((username + ":" + password).getBytes()));
+
+            logger.info("Requesting Endpoint: " + authSvcURI);
+            HttpResponse response = httpClient.execute(postRequest);
+
+            int statusCode = response.getStatusLine().getStatusCode();
+            if (statusCode != 200) {
+                throw new RuntimeException(response.getStatusLine().toString());
+            }
+
+            return Arrays.toString(response.getHeaders("Set-Cookie"));
+            
+        } catch (Exception e) {
+            logger.error(String.format("Authorisation failed for username %s. ", username) + " - " + e.getMessage(), e);
+            throw e;
+        }
     }
 }
