@@ -75,12 +75,13 @@ public class BoqImporter {
     @SuppressWarnings("unchecked")
     private final Map<String, String> fieldList;        //list of fields to import as defined in the config (excluding the descriptor fields)
     private final TemplateServiceRestClient templateSvc;
+    private final ObjectMapper mapper;
 
     Logger logger = LoggerFactory.getLogger(BoqImporter.class);
 
     public BoqImporter(String configFilename) throws Exception {
         //setup the configuration
-        final ObjectMapper mapper = new ObjectMapper();
+        mapper = new ObjectMapper();
 
         final JsonNode config = mapper.readTree(new File(configFilename));
         filename = config.get("importFilename").asText();
@@ -92,9 +93,10 @@ public class BoqImporter {
         //get the template and auth service details
         final JsonNode svcConfig = config.get("imqs-template-service");
         templateSvc = new TemplateServiceRestClient(svcConfig.get("baseURI").asText(),
-                svcConfig.get("authSvcURI").asText(),
-                svcConfig.get("username").asText(),
-                svcConfig.get("password").asText());
+                                                    svcConfig.get("authSvcURI").asText(),
+                                                    svcConfig.get("username").asText(),
+                                                    svcConfig.get("password").asText(),
+                                                    mapper);
     }
 
     public void execute() {
@@ -233,7 +235,6 @@ public class BoqImporter {
     private void submitBatch(List<BoqClassificationTemplateDTO> boqList, long lineCount) throws Exception {
         templateSvc.submitClassificationTemplateBatch(boqList);
         boqList.clear();
-        
         logger.info("Batch complete - records processed = " + lineCount);
     }
 }

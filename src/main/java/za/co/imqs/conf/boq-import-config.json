@@ -1,7 +1,7 @@
 {
 	"imqs-template-service": {
 		"baseURI": "http://192.168.1.65:8001/template/v1_0/",
-		"authSvcURI": "http://192.168.1.65:8001/auth2/login",
+		"authSvcURI": "http://192.168.1.65:8001/auth2/",
 		"username": "dev",
 		"password": "dev"
 	},

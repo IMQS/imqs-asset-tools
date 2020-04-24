@@ -31,18 +31,21 @@ import java.sql.*;
  */
 
 public class BoqExporter {
-    private Database db;
-    private String targetFilename;      /* name of the exported file including the path */
+    private final Database db;
+    private final ObjectMapper mapper;
+    private final String targetFilename;      /* name of the exported file including the path */
 
     Logger logger = LoggerFactory.getLogger(BoqExporter.class);
 
     public BoqExporter(String configFilename) throws Exception {
-        final ObjectMapper mapper = new ObjectMapper();
+        mapper = new ObjectMapper();
+
         final JsonNode config = mapper.readTree(new File(configFilename));
         targetFilename = config.get("exportFilename").asText();
 
+        //setup the database connection
         final JsonNode dbParams = config.get("dbParams");
-        db = new Database(dbParams.toString());
+        db = new Database(dbParams.toString(), mapper);
     }
 
     public void execute() throws SQLException {

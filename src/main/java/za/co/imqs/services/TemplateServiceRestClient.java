@@ -2,6 +2,7 @@ package za.co.imqs.services;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.*;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -20,11 +21,13 @@ import java.util.Base64;
 public class TemplateServiceRestClient {
     private String baseURI;
     private String authSession;
+    private final ObjectMapper mapper;
 
     Logger logger = LoggerFactory.getLogger(TemplateServiceRestClient.class);
 
-    public TemplateServiceRestClient(String baseURI, String authSvcURI, String username, String password) throws Exception {
+    public TemplateServiceRestClient(String baseURI, String authSvcURI, String username, String password, ObjectMapper mapper) throws Exception {
         this.baseURI = baseURI;
+        this.mapper = mapper;
         authSession = getAuthSession(authSvcURI, username, password);
     }
 
@@ -51,9 +54,7 @@ public class TemplateServiceRestClient {
 
             //verify the valid error code first
             int statusCode = response.getStatusLine().getStatusCode();
-            //Debug:remove
-            //int statusCode = 201;
-            if (statusCode != 201) {
+            if (statusCode != HttpStatus.SC_CREATED) {
                 throw new RuntimeException("CreateBoqClassification failed with HTTP error code : " + statusCode + ". Endpoint: " + restEndpoint);
             }
         } catch (Exception e) {
@@ -77,7 +78,6 @@ public class TemplateServiceRestClient {
             putRequest.addHeader("Cookie", authSession);
 
             //Set the request post body
-            final ObjectMapper mapper = new ObjectMapper();
             StringEntity boqTemplate = new StringEntity(mapper.writeValueAsString(boqList));
             putRequest.setEntity(boqTemplate);
 
@@ -87,9 +87,7 @@ public class TemplateServiceRestClient {
 
             //verify the valid error code first
             int statusCode = response.getStatusLine().getStatusCode();
-            //Debug:remove
-            //int statusCode = 201;
-            if (statusCode != 201) {
+            if (statusCode != HttpStatus.SC_CREATED) {
                 throw new RuntimeException("SubmitClassificationTemplateBatch failed with HTTP error code : " + statusCode + ". Endpoint: " + restEndpoint);
             }
         } catch (Exception e) {
@@ -102,19 +100,17 @@ public class TemplateServiceRestClient {
 
     public String getAuthSession(String authSvcURI, String username, String password) throws Exception {
         try (CloseableHttpClient httpClient = HttpClientBuilder.create().build()) {
-            HttpPost postRequest = new HttpPost(authSvcURI);
+            HttpPost postRequest = new HttpPost(authSvcURI + "login");
             postRequest.addHeader("Authorization", "Basic " + Base64.getEncoder().encodeToString((username + ":" + password).getBytes()));
-
             logger.info("Requesting Endpoint: " + authSvcURI);
             HttpResponse response = httpClient.execute(postRequest);
 
             int statusCode = response.getStatusLine().getStatusCode();
-            if (statusCode != 200) {
+            if (statusCode != HttpStatus.SC_OK) {
                 throw new RuntimeException(response.getStatusLine().toString());
             }
 
             return Arrays.toString(response.getHeaders("Set-Cookie"));
-            
         } catch (Exception e) {
             logger.error(String.format("Authorisation failed for username %s. ", username) + " - " + e.getMessage(), e);
             throw e;
