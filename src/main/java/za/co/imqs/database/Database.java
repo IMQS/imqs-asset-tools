@@ -15,19 +15,14 @@ public class Database {
     private DatabaseParams params;
     //public Connection connection;
 
-    public Database(String dbParams) throws Exception {
-
+    public Database(String dbParams, ObjectMapper mapper) throws Exception {
         params = new DatabaseParams();
-
         // map the connection properties
-        final ObjectMapper mapper = new ObjectMapper();
         params = mapper.readValue(dbParams, DatabaseParams.class);
 
     }
     
     public Connection getDbConnection() throws Exception {
-
-        //DriverManager.registerDriver((Driver) Class.forName(params.getDriverClass()).newInstance());
         return DriverManager.getConnection(params.getJdbcUrl(), params.getUsername(), params.getPassword());
     }
 }
