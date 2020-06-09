@@ -128,7 +128,7 @@ public class BoqImporter {
                     //Create Classification nodes for the BOQ Root and BOQ FinYear
                     final String finYear = csvRecord.get("financialYear");
                     boqItem.getClassifications().add(newClassificationItem(BOQ_CLASSIFICATION_ROOT_CODE, BOQ_CLASSIFICATION_CODE, "NULL", "Bill of Quantities Root"));
-                    boqItem.getClassifications().add(newClassificationItem(BOQ_FINYEAR_CODE, finYear, BOQ_FINYEAR_CODE, finYear));
+                    boqItem.getClassifications().add(newClassificationItem(BOQ_FINYEAR_CODE, finYear, BOQ_CLASSIFICATION_CODE, finYear));
 
                     //Create the Classification Descriptor nodes
                     //We Build up the template name by concatenating the descriptions of the descriptor fields
@@ -194,7 +194,16 @@ public class BoqImporter {
         //Add all the template fields
         final List<TemplateFieldDTO> fields = templateDTO.getFields();
         fieldList.forEach((key, value) -> {
-            final TemplateFieldDTO tfDTO = newTemplateField(csvRecord, key, value);
+            final TemplateFieldDTO tfDTO;
+            //descriptorSize is already been used as part of the key and contains the unit as well, thus
+            // for the pure value we are using descriptorSizeValue
+            if (key.equals("descriptorSizeValue")) {
+                tfDTO = newTemplateField(csvRecord, "descriptorSize", value);
+            }
+            else {
+                tfDTO = newTemplateField(csvRecord, key, value);
+            }
+            
             if (tfDTO != null) {
                 fields.add(tfDTO);
             }

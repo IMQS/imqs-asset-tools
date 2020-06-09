@@ -78,6 +78,7 @@ public class TemplateServiceRestClient {
             putRequest.addHeader("Cookie", authSession);
 
             //Set the request post body
+            logger.debug("PAYLOAD= " + mapper.writeValueAsString(boqList));
             StringEntity boqTemplate = new StringEntity(mapper.writeValueAsString(boqList));
             putRequest.setEntity(boqTemplate);
 

@@ -16,6 +16,7 @@
 		"residualPctCG": "NUMERIC",
 		"unitRate": "NUMERIC",
 		"refUnitRateUnit": "STRING",
+		"descriptorSizeValue": "NUMERIC",
 		"descriptorSizeUnit": "STRING",
 		"extentConversion": "NUMERIC",
 		"unitRateCG": "NUMERIC",
